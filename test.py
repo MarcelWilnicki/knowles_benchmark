@@ -6,8 +6,8 @@ import time
 import os
 
 from IPython.display import Audio
-from scipy.io import wavfile
 from scipy.signal import resample
+from scipy.io import wavfile
 
 # model documentation: https://tfhub.dev/google/yamnet/1
 
@@ -39,43 +39,38 @@ def ensure_sample_rate(original_sample_rate, waveform,
 class_map_path = model.class_map_path().numpy()
 class_names = class_names_from_csv(class_map_path)
 
-total_time = 0.0
-count = 0
-# loop through sound files
 for file in os.listdir('/onspecta/dev/knowles_benchmark/sounds/'):
     if file.endswith('.wav'):
-        wav_file_name = 'sounds/' + file
-        print(wav_file_name)
-        sample_rate, wav_data = wavfile.read(wav_file_name, 'rb')
-        sample_rate, wav_data = ensure_sample_rate(sample_rate, wav_data)
-
-        # Show some basic information about the audio.
-        # duration = len(wav_data) / sample_rate
-        # print(f'Sample rate: {sample_rate} Hz')
-        # print(f'Total duration: {duration:.2f}s')
-        # print(f'Size of the input: {len(wav_data)}')
-
-        # The wav_data needs to be normalized to values in [-1.0, 1.0]
-        waveform = wav_data / tf.int16.max
-
-        # Run the model, check the output.
-        start = time.time()
-        scores, embeddings, spectrogram = model(waveform)
-        finish = time.time()
-
-        inference_time = finish - start
-        total_time += inference_time
-
-        scores_np = scores.numpy()
-        spectrogram_np = spectrogram.numpy()
-        infered_class = class_names[scores_np.mean(axis=0).argmax()]
-        print(f'The main sound is: {infered_class}')
-
-        count += 1
+        print(file)
         continue
 
+# wav_file_name = 'speech_whistling2.wav'
+wav_file_name = 'sounds/marimba.wav'
+sample_rate, wav_data = wavfile.read(wav_file_name, 'rb')
+sample_rate, wav_data = ensure_sample_rate(sample_rate, wav_data)
 
-print(f'Total time was: {total_time} seconds')
-print(f'Average inference time was: {total_time/count} seconds')
+# Show some basic information about the audio.
+duration = len(wav_data) / sample_rate
+print(f'Sample rate: {sample_rate} Hz')
+print(f'Total duration: {duration:.2f}s')
+print(f'Size of the input: {len(wav_data)}')
 
+# Listening to the wav file.
+Audio(wav_data, rate=sample_rate)
 
+# The wav_data needs to be normalized to values in [-1.0, 1.0]
+waveform = wav_data / tf.int16.max
+
+# Run the model, check the output.
+start = time.time()
+scores, embeddings, spectrogram = model(waveform)
+finish = time.time()
+
+inference_time = finish - start
+
+scores_np = scores.numpy()
+spectrogram_np = spectrogram.numpy()
+infered_class = class_names[scores_np.mean(axis=0).argmax()]
+print(f'The main sound is: {infered_class}')
+
+print(f'Inference time was: {inference_time} seconds')

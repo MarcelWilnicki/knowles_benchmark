@@ -14,6 +14,8 @@ from scipy.signal import resample
 # Load the model.
 model = hub.load('https://tfhub.dev/google/yamnet/1')
 
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
 
 def class_names_from_csv(class_map_csv_text):
     """Returns list of class names corresponding to score vector."""
@@ -74,8 +76,9 @@ for file in os.listdir('/onspecta/dev/knowles_benchmark/sounds/'):
         count += 1
         continue
 
-
+print("*" * 45)
 print(f'Total time was: {total_time} seconds')
 print(f'Average inference time was: {total_time/count} seconds')
+print(f'the measure was performed on: {count} samples')
 
 

@@ -41,7 +41,7 @@ print(scores.shape, embeddings.shape, spectrogram.shape)  # (N, 521) (N, 1024) (
 
 # Download the YAMNet class map (see main YAMNet model docs) to yamnet_class_map.csv
 # See YAMNet TF2 usage sample for class_names_from_csv() definition.
-class_names = class_names_from_csv(open('/onspecta/dev/knowles_benchmark/yamnet_class_map.csv').read())
-print(class_names[scores.mean(axis=0).argmax()])  # Should print 'Silence'.
+# class_names = class_names_from_csv(open('/onspecta/dev/knowles_benchmark/yamnet_class_map.csv').read())
+# print(class_names[scores.mean(axis=0).argmax()])  # Should print 'Silence'.
 
 
